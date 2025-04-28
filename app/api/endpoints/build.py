@@ -4,7 +4,9 @@ from typing import Dict, Any, List
 
 from app.db.session import get_db
 from app.services.build_release import BuildReleaseService
+from app.services.task_validation import TaskValidationService
 from app.schemas.release import ReleaseCreate
+from app.schemas.task import TaskValidationRequest, TaskValidationResponse
 from app.utils.validators import validate_branch_name, validate_release_name
 
 router = APIRouter()
@@ -46,6 +48,22 @@ def validate_release(
     Проверка имени релиза.
     """
     return validate_release_name(release_name)
+
+@router.post("/validate/tasks", response_model=TaskValidationResponse)
+def validate_tasks(
+    validation_request: TaskValidationRequest
+):
+    """
+    Проверка задач на статусы, зависимости и связи с другими проектами.
+    
+    Проверяет:
+    1. Все задачи должны быть в статусе For Release или In Release
+    2. Если задача зависит от другой задачи, зависимая задача также должна быть включена в релиз
+    3. Если задачи зависят от других проектов, выводится предупреждение
+    
+    Возвращает результаты проверки с предупреждениями и списком проблемных задач.
+    """
+    return TaskValidationService.validate_release_tasks(validation_request.release_task_id)
 
 @router.post("/initiate", response_model=Dict[str, Any])
 def initiate_build(

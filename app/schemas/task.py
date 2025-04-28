@@ -1,0 +1,34 @@
+from pydantic import BaseModel
+from typing import List, Dict, Any, Optional
+
+class TaskBase(BaseModel):
+    id: str
+    title: str
+    status: str
+    
+class TaskDetail(TaskBase):
+    description: Optional[str] = None
+    tags: Optional[List[str]] = None
+    author: Optional[str] = None
+    developer: Optional[str] = None
+    
+class TaskValidationRequest(BaseModel):
+    release_task_id: str
+    
+class TaskValidationIssue(BaseModel):
+    id: str
+    title: str
+    status: str
+    tags: Optional[List[str]] = None
+    author: Optional[str] = None
+    developer: Optional[str] = None
+    
+class TaskValidationError(BaseModel):
+    error_type: str  # "status", "dependency", "project_dependency"
+    message: str
+    issues: List[TaskValidationIssue] = []
+    
+class TaskValidationResponse(BaseModel):
+    success: bool
+    has_errors: bool
+    errors: List[TaskValidationError] = [] 
