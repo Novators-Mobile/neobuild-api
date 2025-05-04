@@ -208,4 +208,63 @@ class IssueTrackerService:
         
         # Даже если есть зависимости от других проектов, это не является ошибкой,
         # но мы всё равно сообщаем о них как о предупреждении
-        return True, tasks_with_project_deps 
+        return True, tasks_with_project_deps
+    
+    @staticmethod
+    def check_auto_merge_possibility(project_id: int, source_branch: str, target_branch: str) -> bool:
+        """
+        Проверка возможности автоматического слияния веток.
+        
+        Args:
+            project_id: ID проекта
+            source_branch: Исходная ветка
+            target_branch: Целевая ветка
+            
+        Returns:
+            True если автоматическое слияние возможно, False в противном случае
+        """
+        # В реальном сценарии здесь был бы вызов API GitLab для проверки возможности слияния
+        # Пока используем случайное значение для демонстрации
+        return random.random() > 0.3  # 70% шанс, что автоматическое слияние возможно
+    
+    @staticmethod
+    def merge_branches(project_id: int, source_branch: str, target_branch: str) -> Dict[str, Any]:
+        """
+        Выполнение слияния веток.
+        
+        Args:
+            project_id: ID проекта
+            source_branch: Исходная ветка
+            target_branch: Целевая ветка
+            
+        Returns:
+            Словарь с результатом слияния
+        """
+        # В реальном сценарии здесь был бы вызов API GitLab для слияния веток
+        # Пока возвращаем симуляцию успешного слияния
+        return {
+            "success": True,
+            "merge_commit_sha": f"sha-{random.randint(1000000, 9999999)}",
+            "message": f"Successfully merged {source_branch} into {target_branch}"
+        }
+    
+    @staticmethod
+    def create_task(task_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Создание новой задачи.
+        
+        Args:
+            task_data: Данные для создания задачи
+            
+        Returns:
+            Созданная задача
+        """
+        # В реальном сценарии здесь был бы вызов API YouTrack для создания задачи
+        # Пока возвращаем симуляцию созданной задачи
+        task_id = f"PROJ-{random.randint(1000, 9999)}"
+        return {
+            "id": task_id,
+            **task_data,
+            "status": "To Do",
+            "created_at": "2024-03-20T12:00:00Z"
+        } 
