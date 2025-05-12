@@ -14,7 +14,7 @@ class Release(Base):
     branch_name = Column(String)
     branch_from = Column(String)
     skip_pipeline = Column(Boolean, default=False)
-    status = Column(String, default="draft")  # черновик, в_процессе, завершен, провален
+    status = Column(String, default="Сделано не завершено")  # Изменен в соответствии с UI
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     

@@ -14,8 +14,10 @@ def get_releases_by_project(db: Session, project_id: int, skip: int = 0, limit: 
     return db.query(Release).filter(Release.project_id == project_id).offset(skip).limit(limit).all()
 
 def create_release(db: Session, release: ReleaseCreate) -> Release:
-    # Генерируем имя ветки из имени релиза
-    branch_name = f"release/{release.name.lower().replace(' ', '-')}"
+    # Генерируем имя ветки из имени релиза, если оно не задано
+    branch_name = release.branch_name
+    if not branch_name:
+        branch_name = f"release/{release.name.lower().replace(' ', '-')}"
     
     db_release = Release(
         name=release.name,
@@ -24,7 +26,7 @@ def create_release(db: Session, release: ReleaseCreate) -> Release:
         branch_from=release.branch_from,
         branch_name=branch_name,
         skip_pipeline=release.skip_pipeline,
-        status="draft"
+        status="Сделано не завершено"  # Статус по умолчанию согласно UI
     )
     db.add(db_release)
     db.commit()

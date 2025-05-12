@@ -1,12 +1,13 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 class ReleaseBase(BaseModel):
     name: str
     project_id: int
     release_task_id: str
     branch_from: str
+    branch_name: Optional[str] = None
     skip_pipeline: bool = False
 
 class ReleaseCreate(ReleaseBase):
@@ -23,8 +24,7 @@ class ReleaseUpdate(BaseModel):
 
 class Release(ReleaseBase):
     id: int
-    branch_name: str
-    status: str
+    status: str = "Сделано не завершено"
     created_at: datetime
     updated_at: datetime
 
@@ -32,4 +32,7 @@ class Release(ReleaseBase):
         orm_mode = True
 
 class ReleaseInDB(Release):
-    pass 
+    pass
+
+class ReleaseListResponse(BaseModel):
+    releases: List[Release] 

@@ -251,20 +251,24 @@ class IssueTrackerService:
     @staticmethod
     def create_task(task_data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Создание новой задачи.
+        Создание новой задачи в системе отслеживания задач.
         
         Args:
-            task_data: Данные для создания задачи
+            task_data: Данные задачи
             
         Returns:
             Созданная задача
         """
-        # В реальном сценарии здесь был бы вызов API YouTrack для создания задачи
-        # Пока возвращаем симуляцию созданной задачи
-        task_id = f"PROJ-{random.randint(1000, 9999)}"
+        # В реальном сценарии здесь был бы вызов API системы отслеживания задач
+        # Пока возвращаем симуляцию успешного создания задачи
+        
         return {
-            "id": task_id,
-            **task_data,
-            "status": "To Do",
-            "created_at": "2024-03-20T12:00:00Z"
+            "id": f"TASK-{random.randint(1000, 9999)}",
+            "title": task_data.get("title", "New Task"),
+            "description": task_data.get("description", ""),
+            "status": "Open",
+            "created_at": "2023-01-01T12:00:00Z",
+            "project_id": task_data.get("project_id"),
+            "type": task_data.get("type", "Task"),
+            "priority": task_data.get("priority", "Medium")
         } 

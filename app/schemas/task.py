@@ -11,6 +11,7 @@ class TaskDetail(TaskBase):
     tags: Optional[List[str]] = None
     author: Optional[str] = None
     developer: Optional[str] = None
+    problem_description: Optional[str] = None  # Для "Описание проблемы" в UI
     
 class TaskValidationRequest(BaseModel):
     release_task_id: str
@@ -31,4 +32,21 @@ class TaskValidationError(BaseModel):
 class TaskValidationResponse(BaseModel):
     success: bool
     has_errors: bool
-    errors: List[TaskValidationError] = [] 
+    errors: List[TaskValidationError] = []
+
+class TaskComparisonItem(BaseModel):
+    id: str
+    title: str
+    
+class TaskComparison(BaseModel):
+    added_tasks: List[TaskComparisonItem] = []
+    removed_tasks: List[TaskComparisonItem] = []
+    
+class CommitComparisonItem(BaseModel):
+    id: str
+    message: str
+    
+class CommitComparison(BaseModel):
+    added_commits: List[CommitComparisonItem] = []
+    removed_commits: List[CommitComparisonItem] = []
+    missing_commits: List[CommitComparisonItem] = [] 
