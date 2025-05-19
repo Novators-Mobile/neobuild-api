@@ -5,16 +5,17 @@ import datetime
 from app.database.session import Base
 
 
-class Project(Base):
-    __tablename__ = "projects"
+class Branch(Base):
+    __tablename__ = "branches"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True, nullable=False)
-    description = Column(Text, nullable=True)
+    is_release_branch = Column(Boolean, default=False)
+    project_id = Column(Integer, ForeignKey("projects.id"))
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
     
     # Relationships
-    branches = relationship("Branch", back_populates="project")
-    releases = relationship("Release", back_populates="project")
-    tasks = relationship("Task", back_populates="project") 
+    project = relationship("Project", back_populates="branches")
+    release = relationship("Release", back_populates="branch", uselist=False)
+    tasks = relationship("Task", back_populates="branch") 

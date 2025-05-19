@@ -1,21 +1,29 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
+import logging
 
-from app.api.api import api_router
 from app.core.config import settings
-from app.db.init_db import init_db
+from app.routers import auth, projects, branches, tasks, releases
+from app.database.session import engine, Base
+from app.database.init_db import init_db
 
-# Инициализация базы данных
-init_db()
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Create database tables
+Base.metadata.create_all(bind=engine)
+
+# Initialize database with sample data (uncomment to use)
+# init_db()
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    description=settings.DESCRIPTION,
-    version=settings.VERSION,
-    openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    openapi_url=f"{settings.API_V1_STR}/openapi.json"
 )
 
-# Настройка CORS
+# Configure CORS
 if settings.BACKEND_CORS_ORIGINS:
     app.add_middleware(
         CORSMiddleware,
@@ -25,10 +33,19 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_headers=["*"],
     )
 
-# Подключение API роутера
-app.include_router(api_router, prefix=settings.API_V1_STR)
+# Include routers
+app.include_router(auth.router, prefix=settings.API_V1_STR)
+app.include_router(projects.router, prefix=settings.API_V1_STR)
+app.include_router(branches.router, prefix=settings.API_V1_STR)
+app.include_router(tasks.router, prefix=settings.API_V1_STR)
+app.include_router(releases.router, prefix=settings.API_V1_STR)
+
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to NeoBuild API", "docs": "/docs"}
 
 
 if __name__ == "__main__":
-    import uvicorn
+    logger.info("Starting NeoBuild API")
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True) 

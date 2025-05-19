@@ -1,52 +1,89 @@
-from pydantic import BaseModel
-from typing import List, Dict, Any, Optional
+from pydantic import BaseModel, Field
+from typing import Optional, List
+from datetime import datetime
+
+
+class TagBase(BaseModel):
+    name: str
+
+
+class TagCreate(TagBase):
+    pass
+
+
+class TagUpdate(TagBase):
+    pass
+
+
+class TagInDB(TagBase):
+    id: int
+    
+    class Config:
+        orm_mode = True
+
+
+class Tag(TagInDB):
+    pass
+
 
 class TaskBase(BaseModel):
-    id: str
     title: str
-    status: str
-    
-class TaskDetail(TaskBase):
     description: Optional[str] = None
-    tags: Optional[List[str]] = None
+    status: str
     author: Optional[str] = None
     developer: Optional[str] = None
-    problem_description: Optional[str] = None  # Для "Описание проблемы" в UI
+    is_release_task: bool = False
+    project_id: int
+    branch_id: Optional[int] = None
+    release_id: Optional[int] = None
+
+
+class TaskCreate(TaskBase):
+    tags: Optional[List[str]] = None
+    dependency_ids: Optional[List[int]] = None
+
+
+class TaskUpdate(TaskBase):
+    title: Optional[str] = None
+    status: Optional[str] = None
+    project_id: Optional[int] = None
+    tags: Optional[List[str]] = None
+    dependency_ids: Optional[List[int]] = None
+
+
+class TaskInDB(TaskBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
     
-class TaskValidationRequest(BaseModel):
-    release_task_id: str
+    class Config:
+        orm_mode = True
+
+
+class Task(TaskInDB):
+    pass
+
+
+class TaskWithRelations(TaskInDB):
+    tags: List[Tag] = []
+    dependencies: List["TaskWithRelations"] = []
     
-class TaskValidationIssue(BaseModel):
-    id: str
+    class Config:
+        orm_mode = True
+
+
+class TaskDetail(TaskWithRelations):
+    dependent_tasks: List[TaskWithRelations] = []
+
+
+class TaskProblem(BaseModel):
+    id: int
     title: str
     status: str
-    tags: Optional[List[str]] = None
     author: Optional[str] = None
     developer: Optional[str] = None
+    tags: List[str] = []
+    description: Optional[str] = None
     
-class TaskValidationError(BaseModel):
-    error_type: str  # "status", "dependency", "project_dependency"
-    message: str
-    issues: List[TaskValidationIssue] = []
-    
-class TaskValidationResponse(BaseModel):
-    success: bool
-    has_errors: bool
-    errors: List[TaskValidationError] = []
-
-class TaskComparisonItem(BaseModel):
-    id: str
-    title: str
-    
-class TaskComparison(BaseModel):
-    added_tasks: List[TaskComparisonItem] = []
-    removed_tasks: List[TaskComparisonItem] = []
-    
-class CommitComparisonItem(BaseModel):
-    id: str
-    message: str
-    
-class CommitComparison(BaseModel):
-    added_commits: List[CommitComparisonItem] = []
-    removed_commits: List[CommitComparisonItem] = []
-    missing_commits: List[CommitComparisonItem] = [] 
+    class Config:
+        orm_mode = True 

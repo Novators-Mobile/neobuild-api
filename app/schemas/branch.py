@@ -3,20 +3,22 @@ from typing import Optional, List
 from datetime import datetime
 
 
-class ProjectBase(BaseModel):
+class BranchBase(BaseModel):
     name: str
-    description: Optional[str] = None
+    is_release_branch: bool = False
+    project_id: int
 
 
-class ProjectCreate(ProjectBase):
+class BranchCreate(BranchBase):
     pass
 
 
-class ProjectUpdate(ProjectBase):
+class BranchUpdate(BranchBase):
     name: Optional[str] = None
+    project_id: Optional[int] = None
 
 
-class ProjectInDB(ProjectBase):
+class BranchInDB(BranchBase):
     id: int
     created_at: datetime
     updated_at: datetime
@@ -25,5 +27,5 @@ class ProjectInDB(ProjectBase):
         orm_mode = True
 
 
-class Project(ProjectInDB):
+class Branch(BranchInDB):
     pass 
