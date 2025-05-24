@@ -320,7 +320,7 @@ class ReleaseService:
 
     def get_release_commits(self, release_id: int) -> List[Dict[str, Any]]:
         """Get all commits that are part of a release."""
-        # Поскольку GitLab сервис удален, возвращаем заглушку
+        # TODO возвращаем заглушку
         return []
 
     def compare_tasks_with_commits(self, release_id: int) -> Dict[str, Any]:
@@ -332,7 +332,7 @@ class ReleaseService:
         # Получаем задачи релиза
         release_tasks = self.db.query(Task).filter(Task.release_id == release_id).all()
         
-        # Поскольку GitLab сервис удален, возвращаем упрощенный ответ
+        # TODO возвращаем упрощенный ответ
         return {
             "success": True,
             "all_match": True,

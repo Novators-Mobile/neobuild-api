@@ -24,8 +24,6 @@ class ReleaseBase(BaseModel):
     description: Optional[str] = None
     project_id: int
     branch_id: Optional[int] = None
-    source_branch_id: Optional[int] = None
-    release_task_id: Optional[int] = None
     skip_pipeline: bool = False
 
 

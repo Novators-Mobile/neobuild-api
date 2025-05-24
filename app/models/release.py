@@ -22,8 +22,6 @@ class Release(Base):
     status = Column(Enum(ReleaseStatus), default=ReleaseStatus.DRAFT)
     project_id = Column(Integer, ForeignKey("projects.id"))
     branch_id = Column(Integer, ForeignKey("branches.id"))
-    source_branch_id = Column(Integer, ForeignKey("branches.id"), nullable=True)
-    release_task_id = Column(Integer, ForeignKey("tasks.id"), nullable=True)
     skip_pipeline = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
@@ -31,8 +29,6 @@ class Release(Base):
     # Relationships
     project = relationship("Project", back_populates="releases")
     branch = relationship("Branch", foreign_keys=[branch_id], back_populates="release")
-    source_branch = relationship("Branch", foreign_keys=[source_branch_id])
-    release_task = relationship("Task", foreign_keys=[release_task_id])
     tasks = relationship("Task", foreign_keys="[Task.release_id]", back_populates="release")
     merge_requests = relationship("MergeRequest", back_populates="release")
     checks = relationship("ReleaseCheck", back_populates="release")

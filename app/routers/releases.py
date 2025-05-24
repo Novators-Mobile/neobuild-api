@@ -55,46 +55,14 @@ def create_release(
     current_user = Depends(get_current_active_user)
 ):
     """Create a new release and perform all necessary checks and operations."""
-    # Check if project exists
     project = db.query(Project).filter(Project.id == release.project_id).first()
     if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
-        
-    # Check if release task exists
-    if release.release_task_id:
-        task = db.query(Task).filter(Task.id == release.release_task_id).first()
-        if task is None:
-            raise HTTPException(status_code=404, detail="Release task not found")
-        
-        if not task.is_release_task:
-            raise HTTPException(status_code=400, detail="Task is not marked as a release task")
-    
-    # Check if source branch exists
-    if release.source_branch_id:
-        branch = db.query(Branch).filter(Branch.id == release.source_branch_id).first()
-        if branch is None:
-            raise HTTPException(status_code=404, detail="Source branch not found")
-        release.source_branch_name = branch.name
-    elif release.source_branch_name:
-        branch = db.query(Branch).filter(
-            Branch.name == release.source_branch_name,
-            Branch.project_id == release.project_id
-        ).first()
-        if branch is None:
-            raise HTTPException(status_code=404, detail="Source branch not found")
-        release.source_branch_id = branch.id
-    else:
-        # Default to develop branch if none specified
-        branch = db.query(Branch).filter(
-            Branch.name == "develop",
-            Branch.project_id == release.project_id
-        ).first()
-        if branch:
-            release.source_branch_id = branch.id
-            release.source_branch_name = "develop"
-        else:
-            raise HTTPException(status_code=400, detail="Source branch must be specified")
-    
+
+    branch = db.query(Branch).filter(Branch.id == release.branch_id).first()
+    if branch is None:
+        raise HTTPException(status_code=404, detail="Branch not found")
+
     # Use the release service to create the release with all checks and operations
     release_service = ReleaseService(db)
     result = release_service.assemble_release(release)
