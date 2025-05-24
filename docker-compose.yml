@@ -9,12 +9,20 @@ services:
       - .:/app
     depends_on:
       - db
+      - gitlab
+      - youtrack
     environment:
       - POSTGRES_SERVER=db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=neobuild
       - POSTGRES_PORT=5432
+      # GitLab configuration
+      - GITLAB_URL=http://localhost:80
+      - GITLAB_TOKEN=glpat-******* # Персональный токен GitLab
+      # YouTrack configuration
+      - YOUTRACK_URL=http://localhost:8080
+      - YOUTRACK_TOKEN=perm:********  # Персональный токен YouTrack
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
   db:
@@ -28,5 +36,47 @@ services:
     ports:
       - "5432:5432"
 
+  youtrack:
+    image: jetbrains/youtrack:2024.3.78677
+    ports:
+      - "8080:8080"
+    volumes:
+      - youtrack_data:/opt/youtrack/data
+      - youtrack_conf:/opt/youtrack/conf
+      - youtrack_logs:/opt/youtrack/logs
+    environment:
+      - YOUTRACK_BASE_URL=http://localhost:8080
+      - YOUTRACK_USER=admin
+      - YOUTRACK_PASSWORD=admin
+    depends_on:
+      - db
+
+  gitlab:
+    image: gitlab/gitlab-ce:16.9.1-ce.0
+    hostname: gitlab
+    ports:
+      - "80:80"
+      - "443:443"
+      - "22:22"
+    volumes:
+      - gitlab_config:/etc/gitlab
+      - gitlab_logs:/var/log/gitlab
+      - gitlab_data:/var/opt/gitlab
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://localhost'
+        gitlab_rails['gitlab_shell_ssh_port'] = 22
+        gitlab_rails['smtp_enable'] = false
+        gitlab_rails['gitlab_email_enabled'] = false
+        prometheus_monitoring['enable'] = false
+    shm_size: '256m'
+    restart: always
+
 volumes:
-  postgres_data: 
+  postgres_data:
+  youtrack_data:
+  youtrack_conf:
+  youtrack_logs:
+  gitlab_config:
+  gitlab_logs:
+  gitlab_data:

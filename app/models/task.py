@@ -50,7 +50,8 @@ class Task(Base):
     # Relationships
     project = relationship("Project", back_populates="tasks")
     branch = relationship("Branch", back_populates="tasks")
-    release = relationship("Release", back_populates="tasks")
+    release = relationship("Release", foreign_keys=[release_id], back_populates="tasks")
+    as_release_task = relationship("Release", foreign_keys="[Release.release_task_id]", back_populates="release_task")
     commits = relationship("Commit", back_populates="task")
     
     # Task dependencies (many-to-many self-referential)

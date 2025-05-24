@@ -17,5 +17,6 @@ class Branch(Base):
     
     # Relationships
     project = relationship("Project", back_populates="branches")
-    release = relationship("Release", back_populates="branch", uselist=False)
+    release = relationship("Release", foreign_keys="[Release.branch_id]", back_populates="branch", uselist=False)
+    source_releases = relationship("Release", foreign_keys="[Release.source_branch_id]", back_populates="source_branch")
     tasks = relationship("Task", back_populates="branch") 
